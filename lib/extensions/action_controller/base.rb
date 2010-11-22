@@ -22,7 +22,14 @@ class ActionController::Base
 
   def deny_access
     store_location
-    redirect_to login_path
+
+    only_provider = Omnisocial.service_configs.find {|service, config| config.options[:only]}
+
+    if only_provider.present?
+      redirect_to "/auth/#{only_provider[0]}"
+    else
+      redirect_to login_path
+    end
   end
 
   def redirect_back_or_default(default)
